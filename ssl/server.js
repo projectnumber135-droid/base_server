@@ -69,6 +69,56 @@ function patchEnv(updates) {
     fs.writeFileSync(envPath, content, 'utf8');
 }
 
+// ─── Utility: Patch Domain in Project Files ─────────────
+function patchDomainInFiles(newSubdomain) {
+    const envPath = path.join(__dirname, '..', '.env');
+    if (!fs.existsSync(envPath)) return;
+
+    // 1. Get CURRENT domain from .env
+    const envContent = fs.readFileSync(envPath, 'utf8');
+    const domainMatch = envContent.match(/^DUCKDNS_DOMAIN=(.*)/m);
+    if (!domainMatch) {
+        broadcastLog('⚠️ Automation: Could not find current DUCKDNS_DOMAIN in .env for deep patching.', 'warning');
+        return;
+    }
+    const oldSubdomain = domainMatch[1].trim();
+    if (oldSubdomain === newSubdomain) return; // No change needed
+
+    const oldFQDN = `${oldSubdomain}.duckdns.org`;
+    const newFQDN = `${newSubdomain}.duckdns.org`;
+
+    broadcastLog(`📝 Automation: Deep-patching project from '${oldSubdomain}' to '${newSubdomain}'...`);
+
+    const filesToPatch = [
+        path.join(__dirname, '..', 'package.json'),
+        path.join(__dirname, '..', 'cert.conf'),
+        path.join(__dirname, '..', 'public', 'ub-cloud-api.js'),
+        path.join(__dirname, '..', 'public', 'index.html'),
+        path.join(__dirname, '..', 'public', 'files.html'),
+        path.join(__dirname, '..', 'scripts', 'update_duckdns.ps1'),
+        path.join(__dirname, '..', 'scripts', 'update_dns.js')
+    ];
+
+    filesToPatch.forEach(file => {
+        if (!fs.existsSync(file)) return;
+        try {
+            let content = fs.readFileSync(file, 'utf8');
+            
+            // Replace FQDNs first (more specific) then subdomains
+            const originalContent = content;
+            content = content.replace(new RegExp(oldFQDN, 'g'), newFQDN);
+            content = content.replace(new RegExp(`\\b${oldSubdomain}\\b`, 'g'), newSubdomain);
+
+            if (content !== originalContent) {
+                fs.writeFileSync(file, content, 'utf8');
+                broadcastLog(`   Patched: ${path.basename(file)}`, 'success');
+            }
+        } catch (e) {
+            broadcastLog(`   Error patching ${path.basename(file)}: ${e.message}`, 'warning');
+        }
+    });
+}
+
 // ─── SSE: Server-Sent Events log streaming ───────────────
 let sseClients = [];
 
@@ -256,6 +306,10 @@ const server = http.createServer(async (req, res) => {
                 SSL_KEY_PATH: path.join(certDir, result.files.key.name).replace(/\\/g, '/'),
                 SSL_CERT_PATH: path.join(certDir, result.files.chain.name).replace(/\\/g, '/')
             });
+
+            // ─── NEW: Deep Patching ──────────
+            patchDomainInFiles(body.subdomain);
+            
             broadcastLog('✅ Automation: Workflow complete!', 'success');
 
             res.end(JSON.stringify({ success: true, result }));
