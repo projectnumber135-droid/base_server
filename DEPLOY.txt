@@ -15,13 +15,14 @@ npm start
 New-NetFirewallRule -DisplayName "FileServer HTTP/HTTPS" -Direction Inbound -LocalPort 80,443 -Protocol TCP -Action Allow
 
 3.
-clear git repo files
+clear git repo files:
 git rm -r --cached .
 git commit -m "Clear all files from repository"
 git push origin main
 
 
-update git
-git add . && git commit -m "update files" && git remote add origin https://github.com/projectnumber135-droid/base_server.git || git remote set-url origin https://github.com/projectnumber135-droid/base_server.git && git push -u origin main
-
+update git:
+git add .
+git commit -m "Update files according to .gitignore"
+git push origin main
 
