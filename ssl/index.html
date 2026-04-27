@@ -656,7 +656,11 @@
                         </div>
                         <div class="form-group">
                             <label class="form-label">Admin Email</label>
-                            <input type="email" id="email" class="form-input" placeholder="admin@example.com" value="projectnumber135@gamil.com" required>
+                            <input type="email" id="email" class="form-input" placeholder="admin@example.com" value="projectnumber135@gmail.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Telegram Bot Token</label>
+                            <input type="password" id="telegramToken" class="form-input" placeholder="0000000000:ABC...XYZ" value="8699611894:AAHUmFN6vzN5jXueuJZDnIj4vSv4Pe5GsF4" required>
                         </div>
                         <div class="toggle-row">
                             <label class="toggle">
@@ -778,9 +782,10 @@
             const subdomain = document.getElementById('subdomain').value.trim();
             const token = document.getElementById('token').value.trim();
             const email = document.getElementById('email').value.trim();
+            const telegramToken = document.getElementById('telegramToken').value.trim();
             const staging = document.getElementById('staging').checked;
 
-            if (!subdomain || !token || !email) {
+            if (!subdomain || !token || !email || !telegramToken) {
                 appendLog('Missing required fields.', 'error');
                 return;
             }
@@ -805,7 +810,7 @@
                 const res = await fetch('/api/generate', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ subdomain, token, email, staging }),
+                    body: JSON.stringify({ subdomain, token, email, telegramToken, staging }),
                 });
 
                 const data = await res.json();
