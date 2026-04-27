@@ -8,6 +8,11 @@ taskkill /f /im node.exe
 git clone https://github.com/projectnumber135-droid/base_server.git "C:\FileServer"
 cd c:\FileServer
 npm install
+
+cd ssl
+node cmd.js
+
+
 cd ssl
 node server.js
 
