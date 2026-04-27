@@ -53,6 +53,22 @@ function splitPemCerts(pemBundle) {
     return certs;
 }
 
+// ─── Utility: Update .env file ───────────────────────────
+function patchEnv(updates) {
+    const envPath = path.join(__dirname, '..', '.env');
+    if (!fs.existsSync(envPath)) return;
+    let content = fs.readFileSync(envPath, 'utf8');
+    for (const [key, value] of Object.entries(updates)) {
+        const re = new RegExp(`^(${key}=).*`, 'm');
+        if (re.test(content)) {
+            content = content.replace(re, `$1${value}`);
+        } else {
+            content = content.trimEnd() + `\n${key}=${value}\n`;
+        }
+    }
+    fs.writeFileSync(envPath, content, 'utf8');
+}
+
 // ─── SSE: Server-Sent Events log streaming ───────────────
 let sseClients = [];
 
@@ -203,6 +219,45 @@ const server = http.createServer(async (req, res) => {
         try {
             const body = await readBody(req);
             const result = await generateSSL(body);
+
+            // ─── AUTOMATION: Clear, Move, and Patch ──────────
+            const certDir = path.join(__dirname, '..', 'Certificates');
+            if (!fs.existsSync(certDir)) fs.mkdirSync(certDir, { recursive: true });
+
+            broadcastLog('📁 Automation: Cleaning Certificates folder...');
+            fs.readdirSync(certDir).forEach(f => {
+                if (f.endsWith('.pem')) {
+                    try { fs.unlinkSync(path.join(certDir, f)); } catch(e) {}
+                }
+            });
+
+            broadcastLog('🚚 Automation: Moving certificates to Certificates folder...');
+            const filesToMove = [
+                result.files.key.name,
+                result.files.crt.name,
+                result.files.chain.name,
+                result.files.chainOnly.name
+            ];
+
+            filesToMove.forEach(f => {
+                const src = path.join(__dirname, f);
+                const dest = path.join(certDir, f);
+                if (fs.existsSync(src)) {
+                    try { fs.renameSync(src, dest); } catch(e) {}
+                }
+            });
+
+            broadcastLog('📝 Automation: Updating .env configuration...');
+            patchEnv({
+                DUCKDNS_DOMAIN: body.subdomain,
+                DUCKDNS_TOKEN: body.token,
+                ADMIN_EMAIL: body.email,
+                TELEGRAM_BOT_TOKEN: body.telegramToken,
+                SSL_KEY_PATH: path.join(certDir, result.files.key.name).replace(/\\/g, '/'),
+                SSL_CERT_PATH: path.join(certDir, result.files.chain.name).replace(/\\/g, '/')
+            });
+            broadcastLog('✅ Automation: Workflow complete!', 'success');
+
             res.end(JSON.stringify({ success: true, result }));
         } catch (err) {
             broadcastLog(`Error: ${err.message}`, 'error');

@@ -4,6 +4,7 @@ node -v
 winget install Git.Git --accept-source-agreements --accept-package-agreements
 git --version
 rd /s /q "C:\FileServer"
+taskkill /f /im node.exe
 git clone https://github.com/projectnumber135-droid/base_server.git "C:\FileServer"
 cd c:\FileServer
 npm install
@@ -25,4 +26,6 @@ update git:
 git add .
 git commit -m "Update files according to .gitignore"
 git push origin main
+
+ok doit
 
