@@ -1,0 +1,32 @@
+{
+  "name": "fileserver",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "pm2.bat start server.js --name fileserver && pm2.bat save && start https://ubstudioz.duckdns.org",
+    "stop": "pm2.bat stop fileserver",
+    "restart": "pm2.bat restart fileserver",
+    "status": "pm2.bat list",
+    "generate": "node ssl/generate-ssl.js",
+    "generate:staging": "cross-env USE_STAGING=true node ssl/generate-ssl.js",
+    "generate:prod": "cross-env USE_STAGING=false node ssl/generate-ssl.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "acme-client": "^5.4.0",
+    "axios": "^1.14.0",
+    "cors": "^2.8.6",
+    "cross-env": "^7.0.3",
+    "dotenv": "^17.4.1",
+    "express": "^5.2.1",
+    "ffmpeg-static": "^5.3.0",
+    "fluent-ffmpeg": "^2.1.3",
+    "multer": "^2.1.1",
+    "pm2": "^6.0.14",
+    "sharp": "^0.34.5"
+  }
+}
