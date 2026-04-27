@@ -31,8 +31,8 @@ const API_KEY = process.env.API_KEY || "your-secret-key-here";
 
 // --- SSL CONFIGURATION (Let's Encrypt) ---
 const sslOptions = {
-    key: fs.readFileSync(path.join(__dirname, 'Certificates', 'ubstudioz.duckdns.org-key.pem')),
-    cert: fs.readFileSync(path.join(__dirname, 'Certificates', 'ubstudioz.duckdns.org-chain.pem'))
+    key: fs.readFileSync(process.env.SSL_KEY_PATH || path.join(__dirname, 'Certificates', 'ubstudioz.duckdns.org-key.pem')),
+    cert: fs.readFileSync(process.env.SSL_CERT_PATH || path.join(__dirname, 'Certificates', 'ubstudioz.duckdns.org-chain.pem'))
 };
 
 app.use(cors());
@@ -53,7 +53,13 @@ if (!fs.existsSync(path.join(uploadDir, 'cut'))) fs.mkdirSync(path.join(uploadDi
 if (!fs.existsSync(path.join(uploadDir, 'merged'))) fs.mkdirSync(path.join(uploadDir, 'merged'), { recursive: true });
 
 // Security: Domain Whitelisting
-const ALLOWED_DOMAINS = ['ubstudioz.duckdns.org', 'localhost', '127.0.0.1', 'movie-soft.web.app'];
+const ALLOWED_DOMAINS = [
+    `${process.env.DUCKDNS_DOMAIN}.duckdns.org`, 
+    'ubstudioz.duckdns.org', 
+    'localhost', 
+    '127.0.0.1', 
+    'movie-soft.web.app'
+];
 const checkDomain = (req, res, next) => {
     // Only protect routes that serve or list data
     const protectedRoutes = ['/api', '/view', '/download', '/upload'];
@@ -558,7 +564,7 @@ function extractSubtitles(inputPath, outputDir) {
 // --- SERVERS ---
 const startHttps = () => {
     https.createServer(sslOptions, app).listen(process.env.PORT_HTTPS || 443, '0.0.0.0', () => {
-        console.log(`🔒 UB-STUDIOZ Secure Server: https://ubstudioz.duckdns.org`);
+        console.log(`🔒 UB-STUDIOZ Secure Server: https://${process.env.DUCKDNS_DOMAIN}.duckdns.org`);
     }).on('error', (err) => {
         console.error("❌ HTTPS Server Error:", err.message);
         if (err.code === 'EADDRINUSE') {
