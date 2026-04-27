@@ -1,4 +1,2 @@
-ssl/
-node_modules/
-pm2/
-logs/
+ssl/node_modules/
+pm2/logs/
