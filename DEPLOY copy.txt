@@ -1,0 +1,89 @@
+setup server in telegram
+
+# 1. Download the latest LTS MSI (v20.x as of now)
+$url = "https://nodejs.org/dist/v20.11.1/node-v20.11.1-x64.msi"
+$outPath = "$env:TEMP\node.msi"
+Invoke-WebRequest -Uri $url -OutFile $outPath
+
+# 2. Run the installer silently
+# /qn = Quiet, no UI | /norestart = Don't reboot automatically
+Start-Process msiexec.exe -ArgumentList "/i $outPath /qn /norestart" -Wait
+
+# 3. Refresh the Environment Path for the current session
+$env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+
+# 4. Verify
+node -v
+
+# 1. Download the latest Git installer
+$url = "https://github.com/git-for-windows/git/releases/download/v2.44.0.windows.1/Git-2.44.0-64-bit.exe"
+$outPath = "C:\git-setup.exe"
+Invoke-WebRequest -Uri $url -OutFile $outPath
+
+# 2. Run the installer silently
+# /VERYSILENT = Quiet, no UI | /NORESTART = Don't reboot automatically
+Start-Process $outPath -ArgumentList "/VERYSILENT /NORESTART /SUPPRESSMSGBOXES" -Wait
+
+# 3. Refresh the Environment Path for the current session
+$env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+
+# 4. Verify
+git --version
+
+git clone https://github.com/projectnumber135-droid/base_server.git "C:\FileServer"
+
+Get-ChildItem "C:\FileServer"
+
+cd C:\FileServer ; npm install
+
+Set-Location C:\FileServer; Start-Process node -ArgumentList "server.js" -WindowStyle Hidden
+
+
+Set-Location C:\FileServer\ssl; @"
+y
+vevm
+n
+n
+y
+8576637819:AAFrynm1RQm2r9c07VYDLJecH2u60xnvI2s
+"@ | node cmd.js
+
+setup server in RDP
+
+1. 
+Add-AppxPackage -Path "https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx"
+Invoke-WebRequest -Uri "https://github.com/microsoft/winget-cli/releases/latest/download/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -OutFile "$env:TEMP\winget.msixbundle"; Add-AppxPackage "$env:TEMP\winget.msixbundle"
+winget --version
+winget install OpenJS.NodeJS.LTS
+node -v
+winget install Git.Git --accept-source-agreements --accept-package-agreements
+git --version
+rd /s /q "C:\FileServer"
+taskkill /f /im node.exe
+git clone https://github.com/projectnumber135-droid/base_server.git "C:\FileServer"
+cd c:\FileServer
+npm install
+cd ssl
+node cmd.js
+
+2. Open PowerShell as an Administrator and run:
+New-NetFirewallRule -DisplayName "FileServer HTTP/HTTPS" -Direction Inbound -LocalPort 80,443 -Protocol TCP -Action Allow
+
+3. extras
+clear git repo files:
+git rm -r --cached .
+git commit -m "Clear all files from repository"
+git push origin main
+
+
+update git:
+git add .
+git commit -m "Update files according to .gitignore"
+git push origin main
+
+winget install -e --id Google.Chrome
+winget install Google.Antigravity
+
+ok doit
+
+8576637819:AAFrynm1RQm2r9c07VYDLJecH2u60xnvI2s

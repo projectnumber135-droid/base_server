@@ -23,6 +23,7 @@ const {
     sendActionAlert, 
     sendVisitAlert
 } = require('./js/telegram');
+const sslApi = require('./ssl/ssl_api');
 
 ffmpeg.setFfmpegPath(ffmpegInstaller);
 
@@ -99,6 +100,9 @@ const authenticate = (req, res, next) => {
     if (key === API_KEY) return next();
     res.status(401).send('Unauthorized');
 };
+
+// --- SSL API ---
+app.use('/api/ssl', authenticate, sslApi);
 
 // --- ROUTES ---
 
