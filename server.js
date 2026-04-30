@@ -262,7 +262,11 @@ app.get('/view/:name', authenticate, async (req, res) => {
             const range = req.headers.range;
             const parts = range.replace(/bytes=/, "").split("-");
             const start = parseInt(parts[0], 10);
-            const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+            
+            // Limit chunks to 2MB to prevent memory bloat and speed up initial buffering
+            const CHUNK_SIZE = 2 * 1024 * 1024;
+            const end = parts[1] ? parseInt(parts[1], 10) : Math.min(start + CHUNK_SIZE, fileSize - 1);
+            
             const chunksize = (end - start) + 1;
             const file = fs.createReadStream(filePath, { start, end });
             let contentType = 'video/mp4';
@@ -274,6 +278,7 @@ app.get('/view/:name', authenticate, async (req, res) => {
                 'Accept-Ranges': 'bytes',
                 'Content-Length': chunksize,
                 'Content-Type': contentType,
+                'Cache-Control': 'no-cache, no-store, must-revalidate',
             };
             res.writeHead(206, head);
             file.pipe(res);
