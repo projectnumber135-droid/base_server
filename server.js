@@ -254,6 +254,35 @@ app.get('/view/:name', authenticate, async (req, res) => {
         }
     }
 
+    const isVideo = ['.mp4', '.webm', '.mkv', '.mov', '.ts'].includes(ext);
+    if (isVideo && req.headers.range) {
+        try {
+            const stat = fs.statSync(filePath);
+            const fileSize = stat.size;
+            const range = req.headers.range;
+            const parts = range.replace(/bytes=/, "").split("-");
+            const start = parseInt(parts[0], 10);
+            const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+            const chunksize = (end - start) + 1;
+            const file = fs.createReadStream(filePath, { start, end });
+            let contentType = 'video/mp4';
+            if (ext === '.webm') contentType = 'video/webm';
+            if (ext === '.ts') contentType = 'video/mp2t';
+            
+            const head = {
+                'Content-Range': `bytes ${start}-${end}/${fileSize}`,
+                'Accept-Ranges': 'bytes',
+                'Content-Length': chunksize,
+                'Content-Type': contentType,
+            };
+            res.writeHead(206, head);
+            file.pipe(res);
+            return;
+        } catch (err) {
+            console.error("Video stream error:", err);
+        }
+    }
+
     res.sendFile(filePath);
 });
 

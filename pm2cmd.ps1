@@ -10,14 +10,14 @@ param(
 if (-not $PassArgs) { $PassArgs = @("list") }
 
 # Set environment variables for the current session
-$env:PM2_HOME = 'c:/FileServer/pm2'
+$env:PM2_HOME = "$PSScriptRoot/pm2"
 $env:PM2_RPC_PORT = '43554'
 $env:PM2_PUB_PORT = '43555'
 
 # Run PM2 directly using absolute paths for reliability
 try {
     $nodePath = "C:\Program Files\nodejs\node.exe"
-    $pm2Path = "C:\FileServer\node_modules\pm2\bin\pm2"
+    $pm2Path = "$PSScriptRoot\node_modules\pm2\bin\pm2"
     
     if (Test-Path $nodePath) {
         & $nodePath $pm2Path @PassArgs
