@@ -15,3 +15,33 @@
 2026-04-30T14:24:25: PM2 log: SIGTERM timeout      : 1600
 2026-04-30T14:24:25: PM2 log: Runtime Binary       : C:\Program Files\nodejs\node.exe
 2026-04-30T14:24:25: PM2 log: ===============================================================================
+2026-04-30T14:24:39: PM2 log: App [FileServer:0] starting in -fork mode-
+2026-04-30T14:24:39: PM2 log: App [FileServer:0] online
+2026-04-30T14:24:39: PM2 error: Error caught while calling pidusage
+2026-04-30T14:24:39: PM2 error: Error: Error: spawn wmic ENOENT
+2026-04-30T14:24:43: PM2 error: Error caught while calling pidusage
+2026-04-30T14:24:43: PM2 error: Error: Error: spawn wmic ENOENT
+2026-04-30T14:24:55: PM2 error: Error caught while calling pidusage
+2026-04-30T14:24:55: PM2 error: Error: Error: spawn wmic ENOENT
+2026-04-30T14:25:25: PM2 error: Error caught while calling pidusage
+2026-04-30T14:25:25: PM2 error: Error: Error: spawn wmic ENOENT
+2026-04-30T14:25:55: PM2 error: Error caught while calling pidusage
+2026-04-30T14:25:55: PM2 error: Error: Error: spawn wmic ENOENT
+2026-04-30T14:26:25: PM2 error: Error caught while calling pidusage
+2026-04-30T14:26:25: PM2 error: Error: Error: spawn wmic ENOENT
+2026-04-30T14:26:55: PM2 error: Error caught while calling pidusage
+2026-04-30T14:26:55: PM2 error: Error: Error: spawn wmic ENOENT
+2026-04-30T14:27:25: PM2 error: Error caught while calling pidusage
+2026-04-30T14:27:25: PM2 error: Error: Error: spawn wmic ENOENT
+2026-04-30T14:27:55: PM2 error: Error caught while calling pidusage
+2026-04-30T14:27:55: PM2 error: Error: Error: spawn wmic ENOENT
+2026-04-30T14:28:25: PM2 error: Error caught while calling pidusage
+2026-04-30T14:28:25: PM2 error: Error: Error: spawn wmic ENOENT
+2026-04-30T14:28:55: PM2 error: Error caught while calling pidusage
+2026-04-30T14:28:55: PM2 error: Error: Error: spawn wmic ENOENT
+2026-04-30T14:29:25: PM2 error: Error caught while calling pidusage
+2026-04-30T14:29:25: PM2 error: Error: Error: spawn wmic ENOENT
+2026-04-30T14:29:55: PM2 error: Error caught while calling pidusage
+2026-04-30T14:29:55: PM2 error: Error: Error: spawn wmic ENOENT
+2026-04-30T14:30:25: PM2 error: Error caught while calling pidusage
+2026-04-30T14:30:25: PM2 error: Error: Error: spawn wmic ENOENT
